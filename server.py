@@ -3,7 +3,7 @@
 # @Author: robertking
 # @Date:   2017-09-23 01:24:29
 # @Last Modified by:   robertking
-# @Last Modified time: 2017-09-23 12:03:15
+# @Last Modified time: 2017-10-05 00:16:04
 
 
 import socketserver
@@ -14,10 +14,13 @@ import time
 
 # Emmm... A little bit nasty here.
 tasks = [
-    type('task', (object,), {'port': 23, 'filename': 'postfix.pyc'}),
-    type('task', (object,), {'port': 233, 'filename': 'draw2.pyc'}),
-    type('task', (object,), {'port': 2333, 'filename': 'draw3.pyc'}),
-    type('task', (object,), {'port': 23333, 'filename': 'draw45.pyc'}),
+    type('task', (object,), {'port': 23, 'filename': 'postfix.pyc', 'input_as_arg': False}),
+    type('task', (object,), {'port': 233, 'filename': 'draw2.pyc', 'input_as_arg': False}),
+    type('task', (object,), {'port': 2333, 'filename': 'draw3.pyc', 'input_as_arg': False}),
+    type('task', (object,), {'port': 23333, 'filename': 'draw45.pyc', 'input_as_arg': False}),
+    type('task', (object,), {'port': 66, 'filename': 'hw2_case_gen.pyc', 'input_as_arg': True}),
+    type('task', (object,), {'port': 666, 'filename': 'hw3_case_gen.pyc', 'input_as_arg': True}),
+    type('task', (object,), {'port': 6666, 'filename': 'hw5_case_gen.pyc', 'input_as_arg': True}),
 ]
 
 # Log file, line buffing mode.
@@ -53,7 +56,10 @@ def create_handler(task_id, task):
             # self.wfile.write('Welcome to Remote Tester powered by robertking!\r\n'
             #                  'Enter your test case below, use ctrl+D (in a new line) to terminate the input.\r\n')
 
-            test_case = self.rfile.read()
+            if task.input_as_arg:
+                test_case = self.rfile.readline()
+            else:
+                test_case = self.rfile.read()
 
             try:
                 process = subprocess.Popen('python3 {} 2>&1'.format(task.filename), shell=True,
